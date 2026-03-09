@@ -3,23 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rive Web Example – test.riv</title>
-    <!-- Rive WebGL2 runtime from CDN (supports Vector Feathering) -->
+    <title>Rive Web Example – Responsive</title>
     <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
     <style>
-      body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #333; font-family: sans-serif; }
-      canvas { width: 871px; height: 1683px; border: 1px solid #555; background-color: #000; }
+      /* Ensure the body takes up the full screen and centers the content */
+      body { 
+        margin: 0; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        background: #333; 
+        font-family: sans-serif;
+        overflow: hidden; /* Prevents scrollbars on mobile */
+      }
+
+      /* Make the canvas responsive */
+      canvas { 
+        width: 100%; 
+        height: 100%; 
+        /* Optional: Set a max-width if you don't want it to stretch too far on desktops */
+        max-width: 871px; 
+        max-height: 100vh;
+        display: block;
+        border: 1px solid #555; 
+        background-color: #000; 
+      }
     </style>
   </head>
   <body>
-    <canvas id="rive-canvas" width="871" height="1683"></canvas>
+    <canvas id="rive-canvas"></canvas>
+
     <script>
-      // ⚠️ REPLACE THIS with your own .riv URL ⚠️
       const RIVE_FILE_URL = './test.riv';
-      
-      // Available Artboards: Slot Machine, Gem, Egg, Star, Heart, Chicken, Spin Button, Start container, Icons, Wheel, Feather Right, Background, Path, Bush Left, Type Score, Bush Right, Feather Left
       const canvas = document.getElementById('rive-canvas');
-      // State Machine Inputs (this state machine has no inputs, but here's the pattern)
 
       const riveInstance = new rive.Rive({
         src: RIVE_FILE_URL,
@@ -27,31 +44,25 @@
         artboard: 'Slot Machine',
         stateMachines: 'State Machine 1',
         autoplay: true,
-        autoBind: true, // Enable Data Binding
+        autoBind: true,
+        // Added Layout to handle responsiveness
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain, // 'Contain' ensures the whole artboard is visible
+          alignment: rive.Alignment.Center,
+        }),
         onLoad: () => {
-          // Initialize inputs for state machine: "State Machine 1"
+          // Manually trigger a resize on load to ensure the drawing surface matches the CSS
+          riveInstance.resizeDrawingSurfaceToCanvas();
+          
           const inputs = riveInstance.stateMachineInputs("State Machine 1");
-          if (inputs) {
-            // Example: If this state machine had inputs, you would access them like this:
-            // const myInput = inputs.find(i => i.name === "inputName");
-            // if (myInput) {
-            //   myInput.value = 1.0;  // For number/boolean inputs
-            //   myInput.fire();       // For trigger inputs
-            // }
-          }
-
-          // =========================================================
-          // 🧠 Data Binding (View Model)
-          // =========================================================
           const vm = riveInstance.viewModelInstance;
-          if (vm) {
-
-            // Usage Examples:
-            // chicken.value = 100;
-          }
         },
       });
-      window.addEventListener('resize', () => { riveInstance.resizeDrawingSurfaceToCanvas(); });
+
+      // Listen for window resize events
+      window.addEventListener('resize', () => { 
+        riveInstance.resizeDrawingSurfaceToCanvas(); 
+      });
     </script>
   </body>
 </html>
